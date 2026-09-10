@@ -7,17 +7,17 @@ import { BrandMark } from "@/components/AuthShell";
 
 export default async function DashboardPage() {
   const session = await getUserSession();
-  if (!session) redirect("/login");
+  if (!session) redirect("/signup");
 
   await connectDb();
   const user = await User.findById(session.userId).lean();
-  if (!user) redirect("/login");
+  if (!user) redirect("/signup");
 
   return (
     <main className="dash">
       <div className="dash-top">
         <BrandMark />
-        <LogoutButton action="/api/auth/logout" redirectTo="/login" />
+        <LogoutButton action="/api/auth/logout" redirectTo="/signup" />
       </div>
       <h1>Your account</h1>
       <p>Signed in and ready.</p>

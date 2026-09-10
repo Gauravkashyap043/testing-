@@ -32,7 +32,7 @@ export async function middleware(request: NextRequest) {
       (p) => typeof p.userId === "string" && typeof p.email === "string"
     );
     if (!ok) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(new URL("/signup", request.url));
     }
   }
 

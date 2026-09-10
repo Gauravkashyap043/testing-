@@ -29,7 +29,6 @@ Open [http://localhost:3000](http://localhost:3000).
 |------|---------|
 | `/signup` | Enter email (saved to MongoDB) |
 | `/signup/password` | Set + hash password |
-| `/login` | Sign in |
 | `/dashboard` | User home |
 | `/admin/login` | Admin gate |
 | `/admin` | List all emails/users |
