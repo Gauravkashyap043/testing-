@@ -2,7 +2,6 @@
 
 import { FormEvent, useState } from "react";
 import { Roboto } from "next/font/google";
-import { useRouter } from "next/navigation";
 
 const roboto = Roboto({
   weight: ["400", "500"],
@@ -14,7 +13,7 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
@@ -38,8 +37,7 @@ export default function SignupPage() {
         return;
       }
 
-      // setSuccess(`Saved ${email}`);
-      router.push("/signup/password");
+      setSuccess(`Saved ${email}`);
       form.reset();
       setLoading(false);
     } catch {
@@ -150,9 +148,14 @@ export default function SignupPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="h-10 min-w-[80px] cursor-pointer rounded-full bg-[#a8c7fa] px-6 text-[14px] font-medium text-[#062e6f] hover:bg-[#aecbfa] disabled:opacity-70"
+                  aria-busy={loading}
+                  className="h-10 min-w-[80px] inline-flex items-center justify-center cursor-pointer rounded-full bg-[#a8c7fa] px-6 text-[14px] font-medium text-[#062e6f] hover:bg-[#aecbfa] disabled:cursor-wait disabled:opacity-80"
                 >
-                  {loading ? "…" : "Next"}
+                  {loading ? (
+                    <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-[#062e6f]/25 border-t-[#062e6f]" />
+                  ) : (
+                    "Next"
+                  )}
                 </button>
               </div>
             </form>
