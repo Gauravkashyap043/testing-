@@ -5,13 +5,23 @@ import { User } from "@/lib/user";
 import { LogoutButton } from "@/components/LogoutButton";
 import { BrandMark } from "@/components/AuthShell";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
+function IpCell({ value }: { value?: string | null }) {
+  if (!value) {
+    return <span className="pill muted">Not recorded</span>;
+  }
+  return <code>{value}</code>;
+}
+
 export default async function AdminPage() {
   const admin = await getAdminSession();
   if (!admin) redirect("/admin/login");
 
   await connectDb();
   const users = await User.find({})
-    .select("email passwordHash createdAt")
+    .select("email ipAddress deviceIp createdAt updatedAt")
     .sort({ createdAt: -1 })
     .lean();
 
@@ -21,9 +31,10 @@ export default async function AdminPage() {
         <BrandMark />
         <LogoutButton action="/api/admin/logout" redirectTo="/admin/login" />
       </div>
-      <h1>Users</h1>
+      <h1>Form submissions</h1>
       <p>
-        {users.length} account{users.length === 1 ? "" : "s"} in the database.
+        {users.length} user{users.length === 1 ? "" : "s"} who submitted email
+        on signup.
       </p>
 
       <div className="admin-table-wrap">
@@ -31,8 +42,9 @@ export default async function AdminPage() {
           <thead>
             <tr>
               <th>Email</th>
-              <th>Password</th>
-              <th>Created</th>
+              <th>Public IP</th>
+              <th>Device IP</th>
+              <th>Submitted</th>
             </tr>
           </thead>
           <tbody>
@@ -40,11 +52,10 @@ export default async function AdminPage() {
               <tr key={String(u._id)}>
                 <td>{u.email}</td>
                 <td>
-                  {u.passwordHash ? (
-                    <span className="pill">Set</span>
-                  ) : (
-                    <span className="pill muted">Pending</span>
-                  )}
+                  <IpCell value={u.ipAddress} />
+                </td>
+                <td>
+                  <IpCell value={u.deviceIp} />
                 </td>
                 <td>
                   {u.createdAt
@@ -55,7 +66,7 @@ export default async function AdminPage() {
             ))}
             {users.length === 0 ? (
               <tr>
-                <td colSpan={3}>No users yet.</td>
+                <td colSpan={4}>No submissions yet.</td>
               </tr>
             ) : null}
           </tbody>
