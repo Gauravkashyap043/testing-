@@ -12,7 +12,7 @@ export async function GET() {
   try {
     await connectDb();
     const users = await User.find({})
-      .select("email passwordHash createdAt updatedAt")
+      .select("email ipAddress deviceIp createdAt updatedAt")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -20,7 +20,8 @@ export async function GET() {
       users: users.map((u) => ({
         id: String(u._id),
         email: u.email,
-        hasPassword: Boolean(u.passwordHash),
+        ipAddress: u.ipAddress ?? null,
+        deviceIp: u.deviceIp ?? null,
         createdAt: u.createdAt,
         updatedAt: u.updatedAt,
       })),

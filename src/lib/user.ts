@@ -10,6 +10,8 @@ const userSchema = new Schema(
       trim: true,
     },
     passwordHash: { type: String },
+    ipAddress: { type: String },
+    deviceIp: { type: String },
   },
   { timestamps: true }
 );
