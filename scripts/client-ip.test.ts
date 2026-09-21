@@ -3,9 +3,7 @@ import {
   getClientIp,
   isIpv4,
   normalizeIp,
-  pickBestDeviceIpv4,
   resolveClientIpv4,
-  resolveDeviceIpv4,
   sanitizeReportedIpv4,
 } from "../src/lib/client-ip.ts";
 
@@ -59,24 +57,5 @@ assert.equal(
 assert.equal(sanitizeReportedIpv4("192.168.1.25"), "192.168.1.25");
 assert.equal(sanitizeReportedIpv4("not-an-ip"), null);
 assert.equal(sanitizeReportedIpv4("::1"), "127.0.0.1");
-
-assert.equal(pickBestDeviceIpv4(["8.8.8.8", "192.168.0.12"]), "192.168.0.12");
-assert.equal(pickBestDeviceIpv4(["127.0.0.1"]), "127.0.0.1");
-
-assert.equal(
-  resolveDeviceIpv4(headers({ "x-forwarded-for": "203.0.113.10" }), null),
-  "203.0.113.10"
-);
-assert.equal(
-  resolveDeviceIpv4(
-    headers({ "x-forwarded-for": "203.0.113.10" }),
-    "192.168.1.40"
-  ),
-  "192.168.1.40"
-);
-assert.equal(
-  resolveDeviceIpv4(headers({ "x-forwarded-for": "::1" }), null),
-  "127.0.0.1"
-);
 
 console.log("client-ip tests passed");

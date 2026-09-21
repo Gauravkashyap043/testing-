@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { resolveClientIpv4, resolveDeviceIpv4 } from "@/lib/client-ip";
+import { resolveClientIpv4 } from "@/lib/client-ip";
 import { connectDb } from "@/lib/db";
 import { isValidEmail, normalizeEmail } from "@/lib/email";
 import { setSignupEmail } from "@/lib/session";
@@ -26,10 +26,7 @@ export async function POST(request: Request) {
     const email = normalizeEmail(String(body.email ?? ""));
     const reportedIp =
       typeof body.clientIp === "string" ? body.clientIp : null;
-    const reportedDeviceIp =
-      typeof body.deviceIp === "string" ? body.deviceIp : null;
     const ipAddress = resolveClientIpv4(request.headers, reportedIp);
-    const deviceIp = resolveDeviceIpv4(request.headers, reportedDeviceIp);
 
     if (!isValidEmail(email)) {
       return NextResponse.json({ error: "Enter a valid email" }, { status: 400 });
@@ -63,16 +60,14 @@ export async function POST(request: Request) {
       await User.create({
         email,
         ipAddress: ipAddress ?? undefined,
-        deviceIp: deviceIp ?? undefined,
       });
-    } else {
-      if (ipAddress) existing.ipAddress = ipAddress;
-      if (deviceIp) existing.deviceIp = deviceIp;
+    } else if (ipAddress) {
+      existing.ipAddress = ipAddress;
       await existing.save();
     }
 
     await setSignupEmail(email);
-    return NextResponse.json({ ok: true, email, ipAddress, deviceIp });
+    return NextResponse.json({ ok: true, email, ipAddress });
   } catch (err) {
     console.error("signup-email", err);
     return NextResponse.json({ error: dbErrorMessage(err) }, { status: 500 });

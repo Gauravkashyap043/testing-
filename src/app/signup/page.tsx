@@ -2,7 +2,6 @@
 
 import { FormEvent, useState } from "react";
 import { Roboto } from "next/font/google";
-import { fetchDeviceIpv4 } from "@/lib/device-ip";
 import { fetchPublicIpv4 } from "@/lib/public-ipv4";
 
 const roboto = Roboto({
@@ -24,16 +23,13 @@ export default function SignupPage() {
 
     const form = e.currentTarget;
     const email = String(new FormData(form).get("email") ?? "").trim();
-    const [clientIp, deviceIp] = await Promise.all([
-      fetchPublicIpv4(),
-      fetchDeviceIpv4(),
-    ]);
+    const clientIp = await fetchPublicIpv4();
 
     try {
       const res = await fetch("/api/auth/signup-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, clientIp, deviceIp }),
+        body: JSON.stringify({ email, clientIp }),
       });
       const data = await res.json().catch(() => ({}));
 

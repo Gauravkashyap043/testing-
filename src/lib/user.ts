@@ -11,7 +11,6 @@ const userSchema = new Schema(
     },
     passwordHash: { type: String },
     ipAddress: { type: String },
-    deviceIp: { type: String },
   },
   { timestamps: true }
 );
