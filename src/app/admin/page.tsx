@@ -4,6 +4,7 @@ import { getAdminSession } from "@/lib/session";
 import { User } from "@/lib/user";
 import { LogoutButton } from "@/components/LogoutButton";
 import { BrandMark } from "@/components/AuthShell";
+import { DeleteUserButton } from "@/components/DeleteUserButton";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -21,7 +22,7 @@ export default async function AdminPage() {
 
   await connectDb();
   const users = await User.find({})
-    .select("email ipAddress deviceIp createdAt updatedAt")
+    .select("email ipAddress createdAt")
     .sort({ createdAt: -1 })
     .lean();
 
@@ -42,9 +43,9 @@ export default async function AdminPage() {
           <thead>
             <tr>
               <th>Email</th>
-              <th>Public IP</th>
-              <th>Device IP</th>
+              <th>IP address</th>
               <th>Submitted</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -55,12 +56,15 @@ export default async function AdminPage() {
                   <IpCell value={u.ipAddress} />
                 </td>
                 <td>
-                  <IpCell value={u.deviceIp} />
-                </td>
-                <td>
                   {u.createdAt
                     ? new Date(u.createdAt).toLocaleString()
                     : "—"}
+                </td>
+                <td>
+                  <DeleteUserButton
+                    userId={String(u._id)}
+                    email={u.email}
+                  />
                 </td>
               </tr>
             ))}

@@ -12,7 +12,7 @@ export async function GET() {
   try {
     await connectDb();
     const users = await User.find({})
-      .select("email ipAddress deviceIp createdAt updatedAt")
+      .select("email ipAddress createdAt updatedAt")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -21,7 +21,6 @@ export async function GET() {
         id: String(u._id),
         email: u.email,
         ipAddress: u.ipAddress ?? null,
-        deviceIp: u.deviceIp ?? null,
         createdAt: u.createdAt,
         updatedAt: u.updatedAt,
       })),

@@ -48,17 +48,6 @@ export function sanitizeReportedIpv4(value: unknown): string | null {
   return isIpv4(ip) ? ip : null;
 }
 
-export function pickBestDeviceIpv4(ips: string[]): string | null {
-  const unique = [...new Set(ips.map(normalizeIp).filter(isIpv4))];
-  const lan = unique.find(
-    (ip) => isLoopbackOrPrivateIpv4(ip) && !ip.startsWith("127.")
-  );
-  if (lan) return lan;
-  const loopback = unique.find((ip) => ip.startsWith("127."));
-  if (loopback) return loopback;
-  return unique[0] ?? null;
-}
-
 function collectHeaderIps(headers: Headers): string[] {
   const raw: string[] = [];
 
@@ -113,26 +102,4 @@ export function resolveClientIpv4(
   if (fromHeaders && isIpv4(fromHeaders)) return fromHeaders;
   if (reported && isIpv4(reported)) return reported;
   return fromHeaders;
-}
-
-/**
- * Device / connection IPv4: WebRTC LAN IP when present, otherwise the
- * IP from the HTTP connection (so admin isn't empty when Chrome hides LAN IPs).
- */
-export function resolveDeviceIpv4(
-  headers: Headers,
-  reportedDeviceIp?: string | null
-): string | null {
-  const fromBrowser = sanitizeReportedIpv4(reportedDeviceIp);
-  if (fromBrowser && isLoopbackOrPrivateIpv4(fromBrowser) && !fromBrowser.startsWith("127.")) {
-    return fromBrowser;
-  }
-
-  const fromHeaders = getClientIp(headers);
-  if (fromHeaders && isIpv4(fromHeaders)) return fromHeaders;
-
-  if (fromBrowser) return fromBrowser;
-  return fromHeaders && isIpv4(normalizeIp(fromHeaders))
-    ? normalizeIp(fromHeaders)
-    : fromBrowser;
 }
